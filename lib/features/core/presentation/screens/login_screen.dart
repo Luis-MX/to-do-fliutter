@@ -28,12 +28,18 @@ class _LoginScreenState extends State<LoginScreen> {
           children: <Widget>[
             TextField(
               controller: _controllerEmail,
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.email),
+                labelText: 'Correo'
+              ),
             ),
-            TextField(
+            PasswordInput(
               controller: _controllerPassword,
             ),
+            SizedBox(height: 24.0,),
+            Text('¿No tienes cuenta?'),
             RaisedButton(
-              child: Text("No tengo una cuenta"),
+              child: Text("Crear Cuenta"),
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (_) => SignUpScreen()
@@ -76,4 +82,40 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+class PasswordInput extends StatefulWidget {
+
+  final TextEditingController controller;
+
+  const PasswordInput({Key key, this.controller}) : super(key: key);
+
+  @override
+  _PasswordInputState createState() => _PasswordInputState();
+}
+
+class _PasswordInputState extends State<PasswordInput> {
+
+  bool ocultarPassword = true;
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: widget.controller,
+      obscureText: ocultarPassword,
+      decoration: InputDecoration(
+        prefixIcon: Icon(Icons.lock),
+        labelText: 'Password',
+        suffix: IconButton(
+          icon: Icon(Icons.remove_red_eye, color: ocultarPassword ? Colors.grey : Colors.blue,),
+          onPressed: () {
+            // Mostrar / Ocultar password
+            setState(() {
+              ocultarPassword = !ocultarPassword;
+            });
+          },
+        )
+      ),
+    );
+  }
+}
+
 
