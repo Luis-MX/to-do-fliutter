@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import "package:flutter/material.dart";
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:todo_app/features/todo/presentation/screens/add_screen.dart';
 
 class HomeScreen extends StatelessWidget {
 
@@ -17,19 +18,29 @@ class HomeScreen extends StatelessWidget {
         title: ListTile(
           title: Text('Bienvenido'),
           subtitle: Text(user.email),
-        )
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+            },
+          )
+        ],
       ),
       body: StreamBuilder<Event>(
         stream: reference.onValue,
         builder: (_, snapshot) {
           if (snapshot.hasData && snapshot.data.snapshot != null && snapshot.data.snapshot.value != null) {
-            List todos = snapshot.data.snapshot.value as List;
+            Map todos = snapshot.data.snapshot.value as Map;
+            print(todos);
             return ListView(
-              children: todos.where((elemento) => elemento != null).map((elemento) {
+              children: todos.keys.map((elemento) {
                 return ListTile(
                   title: Text('$elemento'),
+                  subtitle: Text('${todos[elemento]}'),
                   onTap: () {
-                    //
+                    FirebaseDatabase.instance.reference().child('todo').child(elemento).remove();
                   },
                 );
               }).toList(),
@@ -42,9 +53,11 @@ class HomeScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.exit_to_app),
+        child: Icon(Icons.add),
         onPressed: () {
-          FirebaseAuth.instance.signOut();
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => AddScreen()
+          ));
         },
       ),
     );
